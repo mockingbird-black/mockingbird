@@ -12,13 +12,13 @@ import TokenSymbol from '../TokenSymbol';
 const AccountModal: React.FC<ModalProps> = ({ onDismiss }) => {
   const tombFinance = useTombFinance();
 
-  const tombBalance = useTokenBalance(tombFinance.WHALE);
+  const tombBalance = useTokenBalance(tombFinance.MBIRD);
   const displayTombBalance = useMemo(() => getDisplayBalance(tombBalance), [tombBalance]);
 
-  const tshareBalance = useTokenBalance(tombFinance.OCEAN);
+  const tshareBalance = useTokenBalance(tombFinance.MSHARE);
   const displayTshareBalance = useMemo(() => getDisplayBalance(tshareBalance), [tshareBalance]);
 
-  const tbondBalance = useTokenBalance(tombFinance.ANCHOR);
+  const tbondBalance = useTokenBalance(tombFinance.MOON);
   const displayTbondBalance = useMemo(() => getDisplayBalance(tbondBalance), [tbondBalance]);
 
   return (
@@ -27,7 +27,7 @@ const AccountModal: React.FC<ModalProps> = ({ onDismiss }) => {
 
       <Balances>
         <StyledBalanceWrapper>
-          <TokenSymbol symbol="WHALE" />
+          <TokenSymbol symbol="MBIRD" />
           <StyledBalance>
             <StyledValue>{displayTombBalance}</StyledValue>
             <Label text="TOMB Available" />
@@ -35,7 +35,7 @@ const AccountModal: React.FC<ModalProps> = ({ onDismiss }) => {
         </StyledBalanceWrapper>
 
         <StyledBalanceWrapper>
-          <TokenSymbol symbol="OCEAN" />
+          <TokenSymbol symbol="MSHARE" />
           <StyledBalance>
             <StyledValue>{displayTshareBalance}</StyledValue>
             <Label text="TSHARE Available" />
@@ -43,7 +43,7 @@ const AccountModal: React.FC<ModalProps> = ({ onDismiss }) => {
         </StyledBalanceWrapper>
 
         <StyledBalanceWrapper>
-          <TokenSymbol symbol="ANCHOR" />
+          <TokenSymbol symbol="MOON" />
           <StyledBalance>
             <StyledValue>{displayTbondBalance}</StyledValue>
             <Label text="TBOND Available" />

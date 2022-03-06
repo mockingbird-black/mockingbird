@@ -25,12 +25,12 @@ export class TombFinance {
   config: Configuration;
   contracts: { [name: string]: Contract };
   externalTokens: { [name: string]: ERC20 };
-  masonryVersionOfUser?: string;
+  nestVersionOfUser?: string;
 
   TOMBWFTM_LP: Contract;
-  WHALE: ERC20;
-  OCEAN: ERC20;
-  ANCHOR: ERC20;
+  MBIRD: ERC20;
+  MSHARE: ERC20;
+  MOON: ERC20;
   FTM: ERC20;
 
   constructor(cfg: Configuration) {
@@ -46,13 +46,13 @@ export class TombFinance {
     for (const [symbol, [address, decimal]] of Object.entries(externalTokens)) {
       this.externalTokens[symbol] = new ERC20(address, provider, symbol, decimal);
     }
-    this.WHALE = new ERC20(deployments.tomb.address, provider, 'WHALE');
-    this.OCEAN = new ERC20(deployments.tShare.address, provider, 'OCEAN');
-    this.ANCHOR = new ERC20(deployments.tBond.address, provider, 'ANCHOR');
+    this.MBIRD = new ERC20(deployments.tomb.address, provider, 'MBIRD');
+    this.MSHARE = new ERC20(deployments.tShare.address, provider, 'MSHARE');
+    this.MOON = new ERC20(deployments.tBond.address, provider, 'MOON');
     this.FTM = this.externalTokens['WFTM'];
 
     // Uniswap V2 Pair
-    this.TOMBWFTM_LP = new Contract(externalTokens['WHALE-POS-LP'][0], IUniswapV2PairABI, provider);
+    this.TOMBWFTM_LP = new Contract(externalTokens['MBIRD-POS-LP'][0], IUniswapV2PairABI, provider);
 
     this.config = cfg;
     this.provider = provider;
@@ -69,17 +69,17 @@ export class TombFinance {
     for (const [name, contract] of Object.entries(this.contracts)) {
       this.contracts[name] = contract.connect(this.signer);
     }
-    const tokens = [this.WHALE, this.OCEAN, this.ANCHOR, ...Object.values(this.externalTokens)];
+    const tokens = [this.MBIRD, this.MSHARE, this.MOON, ...Object.values(this.externalTokens)];
     for (const token of tokens) {
       token.connect(this.signer);
     }
     this.TOMBWFTM_LP = this.TOMBWFTM_LP.connect(this.signer);
     console.log(`🔓 Wallet is unlocked. Welcome, ${account}!`);
-    this.fetchMasonryVersionOfUser()
-      .then((version) => (this.masonryVersionOfUser = version))
+    this.fetchNestVersionOfUser()
+      .then((version) => (this.nestVersionOfUser = version))
       .catch((err) => {
-        console.error(`Failed to fetch masonry version: ${err.stack}`);
-        this.masonryVersionOfUser = 'latest';
+        console.error(`Failed to fetch nest version: ${err.stack}`);
+        this.nestVersionOfUser = 'latest';
       });
   }
 
@@ -95,23 +95,23 @@ export class TombFinance {
 
   async getTombStat(): Promise<TokenStat> {
     const { TombFtmRewardPool, TombFtmLpTombRewardPool, TombFtmLpTombRewardPoolOld } = this.contracts;
-    const supply = await this.WHALE.totalSupply();
-    const tombRewardPoolSupply = await this.WHALE.balanceOf(TombFtmRewardPool.address);
-    const tombRewardPoolSupply2 = await this.WHALE.balanceOf(TombFtmLpTombRewardPool.address);
-    const tombRewardPoolSupplyOld = await this.WHALE.balanceOf(TombFtmLpTombRewardPoolOld.address);
+    const supply = await this.MBIRD.totalSupply();
+    const tombRewardPoolSupply = await this.MBIRD.balanceOf(TombFtmRewardPool.address);
+    const tombRewardPoolSupply2 = await this.MBIRD.balanceOf(TombFtmLpTombRewardPool.address);
+    const tombRewardPoolSupplyOld = await this.MBIRD.balanceOf(TombFtmLpTombRewardPoolOld.address);
     const tombCirculatingSupply = supply
       .sub(tombRewardPoolSupply)
       .sub(tombRewardPoolSupply2)
       .sub(tombRewardPoolSupplyOld);
-    const priceInFTM = await this.getTokenPriceFromPancakeswap(this.WHALE);
+    const priceInFTM = await this.getTokenPriceFromPancakeswap(this.MBIRD);
     const priceOfOneFTM = await this.getWFTMPriceFromPancakeswap();
     const priceOfTombInDollars = (Number(priceInFTM) * Number(priceOfOneFTM)).toFixed(2);
 
     return {
       tokenInFtm: priceInFTM,
       priceInDollars: priceOfTombInDollars,
-      totalSupply: getDisplayBalance(supply, this.WHALE.decimal, 0),
-      circulatingSupply: getDisplayBalance(tombCirculatingSupply, this.WHALE.decimal, 0),
+      totalSupply: getDisplayBalance(supply, this.MBIRD.decimal, 0),
+      circulatingSupply: getDisplayBalance(tombCirculatingSupply, this.MBIRD.decimal, 0),
     };
   }
 
@@ -124,8 +124,8 @@ export class TombFinance {
     const lpToken = this.externalTokens[name];
     const lpTokenSupplyBN = await lpToken.totalSupply();
     const lpTokenSupply = getDisplayBalance(lpTokenSupplyBN, 18);
-    const token0 = name.startsWith('WHALE') ? this.WHALE : this.OCEAN;
-    const isTomb = name.startsWith('WHALE');
+    const token0 = name.startsWith('MBIRD') ? this.MBIRD : this.MSHARE;
+    const isTomb = name.startsWith('MBIRD');
     const tokenAmountBN = await token0.balanceOf(lpToken.address);
     const tokenAmount = getDisplayBalance(tokenAmountBN, 18);
 
@@ -158,12 +158,12 @@ export class TombFinance {
     const tombStat = await this.getTombStat();
     const bondTombRatio = await Treasury.getBondPremiumRate();
     let modifier = 1; // keep to 1 if no bondPremium is to be used
-    if (getBalance(bondTombRatio, this.WHALE.decimal) > 0) {
-      modifier = getBalance(bondTombRatio, this.WHALE.decimal);
+    if (getBalance(bondTombRatio, this.MBIRD.decimal) > 0) {
+      modifier = getBalance(bondTombRatio, this.MBIRD.decimal);
     }
     const bondPriceInFTM = (Number(tombStat.tokenInFtm) * modifier).toFixed(2);
     const priceOfTBondInDollars = (Number(tombStat.priceInDollars) * modifier).toFixed(2);
-    const supply = await this.OCEAN.displayedTotalSupply();
+    const supply = await this.MSHARE.displayedTotalSupply();
     return {
       tokenInFtm: bondPriceInFTM,
       priceInDollars: priceOfTBondInDollars,
@@ -182,10 +182,10 @@ export class TombFinance {
   async getShareStat(): Promise<TokenStat> {
     const { TombFtmLPTShareRewardPool } = this.contracts;
 
-    const supply = await this.OCEAN.totalSupply();
+    const supply = await this.MSHARE.totalSupply();
 
-    const priceInFTM = await this.getTokenPriceFromPancakeswap(this.OCEAN);
-    const tombRewardPoolSupply = await this.OCEAN.balanceOf(TombFtmLPTShareRewardPool.address);
+    const priceInFTM = await this.getTokenPriceFromPancakeswap(this.MSHARE);
+    const tombRewardPoolSupply = await this.MSHARE.balanceOf(TombFtmLPTShareRewardPool.address);
     const tShareCirculatingSupply = supply.sub(tombRewardPoolSupply);
     const priceOfOneFTM = await this.getWFTMPriceFromPancakeswap();
     const priceOfSharesInDollars = (Number(priceInFTM) * Number(priceOfOneFTM)).toFixed(2);
@@ -193,23 +193,23 @@ export class TombFinance {
     return {
       tokenInFtm: priceInFTM,
       priceInDollars: priceOfSharesInDollars,
-      totalSupply: getDisplayBalance(supply, this.OCEAN.decimal, 0),
-      circulatingSupply: getDisplayBalance(tShareCirculatingSupply, this.OCEAN.decimal, 0),
+      totalSupply: getDisplayBalance(supply, this.MSHARE.decimal, 0),
+      circulatingSupply: getDisplayBalance(tShareCirculatingSupply, this.MSHARE.decimal, 0),
     };
   }
 
   async getTombStatInEstimatedTWAP(): Promise<TokenStat> {
     const { SeigniorageOracle, TombFtmRewardPool } = this.contracts;
-    const expectedPrice = await SeigniorageOracle.twap(this.WHALE.address, ethers.utils.parseEther('1'));
+    const expectedPrice = await SeigniorageOracle.twap(this.MBIRD.address, ethers.utils.parseEther('1'));
 
-    const supply = await this.WHALE.totalSupply();
-    const tombRewardPoolSupply = await this.WHALE.balanceOf(TombFtmRewardPool.address);
+    const supply = await this.MBIRD.totalSupply();
+    const tombRewardPoolSupply = await this.MBIRD.balanceOf(TombFtmRewardPool.address);
     const tombCirculatingSupply = supply.sub(tombRewardPoolSupply);
     return {
       tokenInFtm: getDisplayBalance(expectedPrice),
       priceInDollars: getDisplayBalance(expectedPrice),
-      totalSupply: getDisplayBalance(supply, this.WHALE.decimal, 0),
-      circulatingSupply: getDisplayBalance(tombCirculatingSupply, this.WHALE.decimal, 0),
+      totalSupply: getDisplayBalance(supply, this.MBIRD.decimal, 0),
+      circulatingSupply: getDisplayBalance(tombCirculatingSupply, this.MBIRD.decimal, 0),
     };
   }
 
@@ -266,19 +266,18 @@ export class TombFinance {
     poolContract: Contract,
     depositTokenName: string,
   ) {
-    if (earnTokenName === 'WHALE') {
+    if (earnTokenName === 'MBIRD') {
       if (!contractName.endsWith('TombRewardPool')) {
         const rewardPerSecond = await poolContract.tombPerSecond();
         if (depositTokenName === 'WFTM') {
           return rewardPerSecond.mul(6000).div(11000).div(24);
+        } else if (depositTokenName === 'BOO') {
+          return rewardPerSecond.mul(2500).div(11000).div(24);
+        } else if (depositTokenName === 'ZOO') {
+          return rewardPerSecond.mul(1000).div(11000).div(24);
+        } else if (depositTokenName === 'SHIBA') {
+          return rewardPerSecond.mul(1500).div(11000).div(24);
         }
-				// else if (depositTokenName === 'BOO') {
-        //   return rewardPerSecond.mul(2500).div(11000).div(24);
-        // } else if (depositTokenName === 'ZOO') {
-        //   return rewardPerSecond.mul(1000).div(11000).div(24);
-        // } else if (depositTokenName === 'SHIBA') {
-        //   return rewardPerSecond.mul(1500).div(11000).div(24);
-        // }
         return rewardPerSecond.div(24);
       }
       const poolStartTime = await poolContract.poolStartTime();
@@ -311,10 +310,10 @@ export class TombFinance {
     if (tokenName === 'WFTM') {
       tokenPrice = priceOfOneFtmInDollars;
     } else {
-      if (tokenName === 'WHALE-POS-LP') {
-        tokenPrice = await this.getLPTokenPrice(token, this.WHALE, true);
-      } else if (tokenName === 'OCEAN-POS-LP') {
-        tokenPrice = await this.getLPTokenPrice(token, this.OCEAN, false);
+      if (tokenName === 'MBIRD-POS-LP') {
+        tokenPrice = await this.getLPTokenPrice(token, this.MBIRD, true);
+      } else if (tokenName === 'MSHARE-POS-LP') {
+        tokenPrice = await this.getLPTokenPrice(token, this.MSHARE, false);
       } else if (tokenName === 'SHIBA') {
         tokenPrice = await this.getTokenPriceFromSpiritswap(token);
       } else {
@@ -373,10 +372,10 @@ export class TombFinance {
     }
 
     const TSHAREPrice = (await this.getShareStat()).priceInDollars;
-    const masonrytShareBalanceOf = await this.OCEAN.balanceOf(this.currentMasonry().address);
-    const masonryTVL = Number(getDisplayBalance(masonrytShareBalanceOf, this.OCEAN.decimal)) * Number(TSHAREPrice);
+    const nesttShareBalanceOf = await this.MSHARE.balanceOf(this.currentNest().address);
+    const nestTVL = Number(getDisplayBalance(nesttShareBalanceOf, this.MSHARE.decimal)) * Number(TSHAREPrice);
 
-    return totalValue + masonryTVL;
+    return totalValue + nestTVL;
   }
 
   /**
@@ -469,19 +468,19 @@ export class TombFinance {
     return await pool.withdraw(poolId, userInfo.amount);
   }
 
-  async fetchMasonryVersionOfUser(): Promise<string> {
+  async fetchNestVersionOfUser(): Promise<string> {
     return 'latest';
   }
 
-  currentMasonry(): Contract {
-    if (!this.masonryVersionOfUser) {
+  currentNest(): Contract {
+    if (!this.nestVersionOfUser) {
       //throw new Error('you must unlock the wallet to continue.');
     }
-    return this.contracts.Masonry;
+    return this.contracts.Nest;
   }
 
-  isOldMasonryMember(): boolean {
-    return this.masonryVersionOfUser !== 'latest';
+  isOldNestMember(): boolean {
+    return this.nestVersionOfUser !== 'latest';
   }
 
   async getTokenPriceFromPancakeswap(tokenContract: ERC20): Promise<string> {
@@ -548,10 +547,10 @@ export class TombFinance {
   //===================================================================
   //===================================================================
 
-  async getMasonryAPR() {
-    const Masonry = this.currentMasonry();
-    const latestSnapshotIndex = await Masonry.latestSnapshotIndex();
-    const lastHistory = await Masonry.masonryHistory(latestSnapshotIndex);
+  async getNestAPR() {
+    const Nest = this.currentNest();
+    const latestSnapshotIndex = await Nest.latestSnapshotIndex();
+    const lastHistory = await Nest.nestHistory(latestSnapshotIndex);
 
     const lastRewardsReceived = lastHistory[1];
 
@@ -561,85 +560,85 @@ export class TombFinance {
 
     //Mgod formula
     const amountOfRewardsPerDay = epochRewardsPerShare * Number(TOMBPrice) * 4;
-    const masonrytShareBalanceOf = await this.OCEAN.balanceOf(Masonry.address);
-    const masonryTVL = Number(getDisplayBalance(masonrytShareBalanceOf, this.OCEAN.decimal)) * Number(TSHAREPrice);
-    const realAPR = ((amountOfRewardsPerDay * 100) / masonryTVL) * 365;
+    const nesttShareBalanceOf = await this.MSHARE.balanceOf(Nest.address);
+    const nestTVL = Number(getDisplayBalance(nesttShareBalanceOf, this.MSHARE.decimal)) * Number(TSHAREPrice);
+    const realAPR = ((amountOfRewardsPerDay * 100) / nestTVL) * 365;
     return realAPR;
   }
 
   /**
-   * Checks if the user is allowed to retrieve their reward from the Masonry
+   * Checks if the user is allowed to retrieve their reward from the Nest
    * @returns true if user can withdraw reward, false if they can't
    */
-  async canUserClaimRewardFromMasonry(): Promise<boolean> {
-    const Masonry = this.currentMasonry();
-    return await Masonry.canClaimReward(this.myAccount);
+  async canUserClaimRewardFromNest(): Promise<boolean> {
+    const Nest = this.currentNest();
+    return await Nest.canClaimReward(this.myAccount);
   }
 
   /**
-   * Checks if the user is allowed to retrieve their reward from the Masonry
+   * Checks if the user is allowed to retrieve their reward from the Nest
    * @returns true if user can withdraw reward, false if they can't
    */
-  async canUserUnstakeFromMasonry(): Promise<boolean> {
-    const Masonry = this.currentMasonry();
-    const canWithdraw = await Masonry.canWithdraw(this.myAccount);
-    const stakedAmount = await this.getStakedSharesOnMasonry();
-    const notStaked = Number(getDisplayBalance(stakedAmount, this.OCEAN.decimal)) === 0;
+  async canUserUnstakeFromNest(): Promise<boolean> {
+    const Nest = this.currentNest();
+    const canWithdraw = await Nest.canWithdraw(this.myAccount);
+    const stakedAmount = await this.getStakedSharesOnNest();
+    const notStaked = Number(getDisplayBalance(stakedAmount, this.MSHARE.decimal)) === 0;
     const result = notStaked ? true : canWithdraw;
     return result;
   }
 
-  async timeUntilClaimRewardFromMasonry(): Promise<BigNumber> {
-    // const Masonry = this.currentMasonry();
-    // const mason = await Masonry.masons(this.myAccount);
+  async timeUntilClaimRewardFromNest(): Promise<BigNumber> {
+    // const Nest = this.currentNest();
+    // const mason = await Nest.masons(this.myAccount);
     return BigNumber.from(0);
   }
 
-  async getTotalStakedInMasonry(): Promise<BigNumber> {
-    const Masonry = this.currentMasonry();
-    return await Masonry.totalSupply();
+  async getTotalStakedInNest(): Promise<BigNumber> {
+    const Nest = this.currentNest();
+    return await Nest.totalSupply();
   }
 
-  async stakeShareToMasonry(amount: string): Promise<TransactionResponse> {
-    if (this.isOldMasonryMember()) {
-      throw new Error("you're using old masonry. please withdraw and deposit the TSHARE again.");
+  async stakeShareToNest(amount: string): Promise<TransactionResponse> {
+    if (this.isOldNestMember()) {
+      throw new Error("you're using old nest. please withdraw and deposit the TSHARE again.");
     }
-    const Masonry = this.currentMasonry();
-    return await Masonry.stake(decimalToBalance(amount));
+    const Nest = this.currentNest();
+    return await Nest.stake(decimalToBalance(amount));
   }
 
-  async getStakedSharesOnMasonry(): Promise<BigNumber> {
-    const Masonry = this.currentMasonry();
-    if (this.masonryVersionOfUser === 'v1') {
-      return await Masonry.getShareOf(this.myAccount);
+  async getStakedSharesOnNest(): Promise<BigNumber> {
+    const Nest = this.currentNest();
+    if (this.nestVersionOfUser === 'v1') {
+      return await Nest.getShareOf(this.myAccount);
     }
-    return await Masonry.balanceOf(this.myAccount);
+    return await Nest.balanceOf(this.myAccount);
   }
 
-  async getEarningsOnMasonry(): Promise<BigNumber> {
-    const Masonry = this.currentMasonry();
-    if (this.masonryVersionOfUser === 'v1') {
-      return await Masonry.getCashEarningsOf(this.myAccount);
+  async getEarningsOnNest(): Promise<BigNumber> {
+    const Nest = this.currentNest();
+    if (this.nestVersionOfUser === 'v1') {
+      return await Nest.getCashEarningsOf(this.myAccount);
     }
-    return await Masonry.earned(this.myAccount);
+    return await Nest.earned(this.myAccount);
   }
 
-  async withdrawShareFromMasonry(amount: string): Promise<TransactionResponse> {
-    const Masonry = this.currentMasonry();
-    return await Masonry.withdraw(decimalToBalance(amount));
+  async withdrawShareFromNest(amount: string): Promise<TransactionResponse> {
+    const Nest = this.currentNest();
+    return await Nest.withdraw(decimalToBalance(amount));
   }
 
-  async harvestCashFromMasonry(): Promise<TransactionResponse> {
-    const Masonry = this.currentMasonry();
-    if (this.masonryVersionOfUser === 'v1') {
-      return await Masonry.claimDividends();
+  async harvestCashFromNest(): Promise<TransactionResponse> {
+    const Nest = this.currentNest();
+    if (this.nestVersionOfUser === 'v1') {
+      return await Nest.claimDividends();
     }
-    return await Masonry.claimReward();
+    return await Nest.claimReward();
   }
 
-  async exitFromMasonry(): Promise<TransactionResponse> {
-    const Masonry = this.currentMasonry();
-    return await Masonry.exit();
+  async exitFromNest(): Promise<TransactionResponse> {
+    const Nest = this.currentNest();
+    return await Nest.exit();
   }
 
   async getTreasuryNextAllocationTime(): Promise<AllocationTime> {
@@ -653,18 +652,18 @@ export class TombFinance {
   /**
    * This method calculates and returns in a from to to format
    * the period the user needs to wait before being allowed to claim
-   * their reward from the masonry
+   * their reward from the nest
    * @returns Promise<AllocationTime>
    */
   async getUserClaimRewardTime(): Promise<AllocationTime> {
-    const { Masonry, Treasury } = this.contracts;
-    const nextEpochTimestamp = await Masonry.nextEpochPoint(); //in unix timestamp
-    const currentEpoch = await Masonry.epoch();
-    const mason = await Masonry.masons(this.myAccount);
+    const { Nest, Treasury } = this.contracts;
+    const nextEpochTimestamp = await Nest.nextEpochPoint(); //in unix timestamp
+    const currentEpoch = await Nest.epoch();
+    const mason = await Nest.masons(this.myAccount);
     const startTimeEpoch = mason.epochTimerStart;
     const period = await Treasury.PERIOD();
     const periodInHours = period / 60 / 60; // 6 hours, period is displayed in seconds which is 21600
-    const rewardLockupEpochs = await Masonry.rewardLockupEpochs();
+    const rewardLockupEpochs = await Nest.rewardLockupEpochs();
     const targetEpochForClaimUnlock = Number(startTimeEpoch) + Number(rewardLockupEpochs);
 
     const fromDate = new Date(Date.now());
@@ -686,21 +685,21 @@ export class TombFinance {
   /**
    * This method calculates and returns in a from to to format
    * the period the user needs to wait before being allowed to unstake
-   * from the masonry
+   * from the nest
    * @returns Promise<AllocationTime>
    */
   async getUserUnstakeTime(): Promise<AllocationTime> {
-    const { Masonry, Treasury } = this.contracts;
-    const nextEpochTimestamp = await Masonry.nextEpochPoint();
-    const currentEpoch = await Masonry.epoch();
-    const mason = await Masonry.masons(this.myAccount);
+    const { Nest, Treasury } = this.contracts;
+    const nextEpochTimestamp = await Nest.nextEpochPoint();
+    const currentEpoch = await Nest.epoch();
+    const mason = await Nest.masons(this.myAccount);
     const startTimeEpoch = mason.epochTimerStart;
     const period = await Treasury.PERIOD();
     const PeriodInHours = period / 60 / 60;
-    const withdrawLockupEpochs = await Masonry.withdrawLockupEpochs();
+    const withdrawLockupEpochs = await Nest.withdrawLockupEpochs();
     const fromDate = new Date(Date.now());
     const targetEpochForClaimUnlock = Number(startTimeEpoch) + Number(withdrawLockupEpochs);
-    const stakedAmount = await this.getStakedSharesOnMasonry();
+    const stakedAmount = await this.getStakedSharesOnNest();
     if (currentEpoch <= targetEpochForClaimUnlock && Number(stakedAmount) === 0) {
       return { from: fromDate, to: fromDate };
     } else if (targetEpochForClaimUnlock - currentEpoch === 1) {
@@ -721,14 +720,14 @@ export class TombFinance {
     if (ethereum && ethereum.networkVersion === config.chainId.toString()) {
       let asset;
       let assetUrl;
-      if (assetName === 'WHALE') {
-        asset = this.WHALE;
+      if (assetName === 'MBIRD') {
+        asset = this.MBIRD;
         assetUrl = 'https://tomb.finance/presskit/tomb_icon_noBG.png';
-      } else if (assetName === 'OCEAN') {
-        asset = this.OCEAN;
+      } else if (assetName === 'MSHARE') {
+        asset = this.MSHARE;
         assetUrl = 'https://tomb.finance/presskit/tshare_icon_noBG.png';
-      } else if (assetName === 'ANCHOR') {
-        asset = this.ANCHOR;
+      } else if (assetName === 'MOON') {
+        asset = this.MOON;
         assetUrl = 'https://tomb.finance/presskit/tbond_icon_noBG.png';
       }
       await ethereum.request({
@@ -755,13 +754,13 @@ export class TombFinance {
 
     const treasuryDaoFundedFilter = Treasury.filters.DaoFundFunded();
     const treasuryDevFundedFilter = Treasury.filters.DevFundFunded();
-    const treasuryMasonryFundedFilter = Treasury.filters.MasonryFunded();
+    const treasuryNestFundedFilter = Treasury.filters.NestFunded();
 
-    let masonryFundEvents = await Treasury.queryFilter(treasuryMasonryFundedFilter);
+    let nestFundEvents = await Treasury.queryFilter(treasuryNestFundedFilter);
     var events: any[] = [];
-    masonryFundEvents.forEach(function callback(value, index) {
+    nestFundEvents.forEach(function callback(value, index) {
       events.push({ epoch: index + 1 });
-      events[index].masonryFund = getDisplayBalance(value.args[1]);
+      events[index].nestFund = getDisplayBalance(value.args[1]);
     });
     let DEVFundEvents = await Treasury.queryFilter(treasuryDevFundedFilter);
     DEVFundEvents.forEach(function callback(value, index) {
@@ -781,7 +780,7 @@ export class TombFinance {
     if (tokenName === FTM_TICKER) {
       estimate = await zapper.estimateZapIn(lpToken.address, SPOOKY_ROUTER_ADDR, parseUnits(amount, 18));
     } else {
-      const token = tokenName === TOMB_TICKER ? this.WHALE : this.OCEAN;
+      const token = tokenName === TOMB_TICKER ? this.MBIRD : this.MSHARE;
       estimate = await zapper.estimateZapInToken(
         token.address,
         lpToken.address,
@@ -800,7 +799,7 @@ export class TombFinance {
       };
       return await zapper.zapIn(lpToken.address, SPOOKY_ROUTER_ADDR, this.myAccount, overrides);
     } else {
-      const token = tokenName === TOMB_TICKER ? this.WHALE : this.OCEAN;
+      const token = tokenName === TOMB_TICKER ? this.MBIRD : this.MSHARE;
       return await zapper.zapInToken(
         token.address,
         parseUnits(amount, 18),

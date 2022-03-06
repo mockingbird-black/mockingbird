@@ -28,15 +28,15 @@ const ZapModal: React.FC<ZapProps> = ({ onConfirm, onDismiss, tokenName = '', de
   const tombFinance = useTombFinance();
   const { balance } = useWallet();
   const ftmBalance = (Number(balance) / 1e18).toFixed(4).toString();
-  const tombBalance = useTokenBalance(tombFinance.WHALE);
-  const tshareBalance = useTokenBalance(tombFinance.OCEAN);
+  const tombBalance = useTokenBalance(tombFinance.MBIRD);
+  const tshareBalance = useTokenBalance(tombFinance.MSHARE);
   const [val, setVal] = useState('');
   const [zappingToken, setZappingToken] = useState(FTM_TICKER);
   const [zappingTokenBalance, setZappingTokenBalance] = useState(ftmBalance);
   const [estimate, setEstimate] = useState({ token0: '0', token1: '0' }); // token0 will always be FTM in this case
   const [approveZapperStatus, approveZapper] = useApproveZapper(zappingToken);
-  const tombFtmLpStats = useLpStats('WHALE-POS-LP');
-  const tShareFtmLpStats = useLpStats('OCEAN-POS-LP');
+  const tombFtmLpStats = useLpStats('MBIRD-POS-LP');
+  const tShareFtmLpStats = useLpStats('MSHARE-POS-LP');
   const tombLPStats = useMemo(() => (tombFtmLpStats ? tombFtmLpStats : null), [tombFtmLpStats]);
   const tshareLPStats = useMemo(() => (tShareFtmLpStats ? tShareFtmLpStats : null), [tShareFtmLpStats]);
   const ftmAmountPerLP = tokenName.startsWith(TOMB_TICKER) ? tombLPStats?.ftmAmount : tshareLPStats?.ftmAmount;

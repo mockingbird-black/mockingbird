@@ -18,17 +18,17 @@ import shibaLogo from '../../assets/img/shiba_logo.svg';
 const logosBySymbol: { [title: string]: string } = {
   //Real tokens
   //=====================
-  WHALE: tombLogo,
+  MBIRD: tombLogo,
   TOMBPNG: tombLogoPNG,
   TSHAREPNG: tShareLogoPNG,
-  OCEAN: tShareLogo,
-  ANCHOR: tBondLogo,
+  MSHARE: tShareLogo,
+  MOON: tBondLogo,
   WFTM: wftmLogo,
   BOO: booLogo,
   SHIBA: shibaLogo,
   ZOO: zooLogo,
-  'WHALE-POS-LP': tombFtmLpLogo,
-  'OCEAN-POS-LP': tshareFtmLpLogo,
+  'MBIRD-POS-LP': tombFtmLpLogo,
+  'MSHARE-POS-LP': tshareFtmLpLogo,
 };
 
 type LogoProps = {

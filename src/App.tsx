@@ -18,9 +18,9 @@ import Popups from './components/Popups';
 import Regulations from './views/Regulations/Regulations';
 
 const Home = lazy(() => import('./views/Home'));
-const Cemetery = lazy(() => import('./views/Cemetery'));
-const Masonry = lazy(() => import('./views/Masonry'));
-const Pit = lazy(() => import('./views/Pit'));
+const Sky = lazy(() => import('./views/Sky'));
+const Nest = lazy(() => import('./views/Nest'));
+const Flight = lazy(() => import('./views/Flight'));
 
 const NoMatch = () => (
   <h3 style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
@@ -46,14 +46,14 @@ const App: React.FC = () => {
             <Route exact path="/">
               <Home />
             </Route>
-            <Route path="/cemetery">
-              <Cemetery />
+            <Route path="/sky">
+              <Sky />
             </Route>
-            <Route path="/masonry">
-              <Masonry />
+            <Route path="/nest">
+              <Nest />
             </Route>
-            <Route path="/pit">
-              <Pit />
+            <Route path="/flight">
+              <Flight />
             </Route>
             <Route path="/regulations">
               <Regulations />

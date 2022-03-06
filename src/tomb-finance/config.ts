@@ -13,7 +13,7 @@ export type Configuration = {
 
   baseLaunchDate: Date;
   bondLaunchesAt: Date;
-  masonryLaunchesAt: Date;
+  nestLaunchesAt: Date;
 
   refreshInterval: number;
 };

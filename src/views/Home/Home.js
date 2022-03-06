@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import Page from '../../components/Page';
-import HomeImage from '../../assets/img/ocean.jpg';
+import HomeImage from '../../assets/img/mshare.jpg';
 import CashImage from '../../assets/img/poseidon.svg';
 import Image from 'material-ui-image';
 import { createGlobalStyle } from 'styled-components';
@@ -43,8 +43,8 @@ const useStyles = makeStyles((theme) => ({
 const Home = () => {
   const classes = useStyles();
   const TVL = useTotalValueLocked();
-  const tombFtmLpStats = useLpStats('WHALE-POS-LP');
-  const tShareFtmLpStats = useLpStats('OCEAN-POS-LP');
+  const tombFtmLpStats = useLpStats('MBIRD-POS-LP');
+  const tShareFtmLpStats = useLpStats('MSHARE-POS-LP');
   const tombStats = useTombStats();
   const tShareStats = usetShareStats();
   const tBondStats = useBondStats();
@@ -98,8 +98,8 @@ const Home = () => {
   );
   const tBondTotalSupply = useMemo(() => (tBondStats ? String(tBondStats.totalSupply) : null), [tBondStats]);
 
-  const tombLpZap = useZap({ depositTokenName: 'WHALE-POS-LP' });
-  const tshareLpZap = useZap({ depositTokenName: 'OCEAN-POS-LP' });
+  const tombLpZap = useZap({ depositTokenName: 'MBIRD-POS-LP' });
+  const tshareLpZap = useZap({ depositTokenName: 'MSHARE-POS-LP' });
 
   const [onPresentTombZap, onDissmissTombZap] = useModal(
     <ZapModal
@@ -109,7 +109,7 @@ const Home = () => {
         tombLpZap.onZap(zappingToken, tokenName, amount);
         onDissmissTombZap();
       }}
-      tokenName={'OCEAN-POS-LP'}
+      tokenName={'MSHARE-POS-LP'}
     />,
   );
 
@@ -121,7 +121,7 @@ const Home = () => {
         tshareLpZap.onZap(zappingToken, tokenName, amount);
         onDissmissTshareZap();
       }}
-      tokenName={'OCEAN-POS-LP'}
+      tokenName={'MSHARE-POS-LP'}
     />,
   );
 
@@ -138,10 +138,10 @@ const Home = () => {
         <Grid item xs={12} sm={8}>
           <Paper>
             <Box p={4}>
-              <h2>Welcome to Mockingbird</h2>
+              <h2>Welcome to Mocking Bird</h2>
               <p>An algorithmic stablecoin on Fantom Opera, pegged to the price of 1 POS via seigniorage.</p>
               <p>
-                Stake your MSHARE in the Masonry to earn inflationary MBIRD rewards or provide liquidity on pairs and
+                Stake your MSHARE in the Nest to earn inflationary MBIRD rewards or provide liquidity on pairs and
                 start earning today!
               </p>
             </Box>
@@ -163,10 +163,10 @@ const Home = () => {
           <Card style={{ height: '100%' }}>
             <CardContent align="center" style={{ marginTop: '2.5%' }}>
               {/* <h2 style={{ marginBottom: '20px' }}>Wallet Balance</h2> */}
-              <Button color="primary" href="/masonry" variant="contained" style={{ marginRight: '10px' }}>
+              <Button color="primary" href="/nest" variant="contained" style={{ marginRight: '10px' }}>
                 Stake Now
               </Button>
-              <Button href="/cemetery" variant="contained" className={classes.button} style={{ marginRight: '10px' }}>
+              <Button href="/sky" variant="contained" className={classes.button} style={{ marginRight: '10px' }}>
                 Farm Now
               </Button>
               <Button
@@ -192,7 +192,7 @@ const Home = () => {
               <h2>MBIRD</h2>
               <Button
                 onClick={() => {
-                  tombFinance.watchAssetInMetamask('WHALE');
+                  tombFinance.watchAssetInMetamask('MBIRD');
                 }}
                 color="primary"
                 variant="outlined"
@@ -203,7 +203,7 @@ const Home = () => {
               </Button>
               <Box mt={2}>
                 <CardIcon>
-                  <TokenSymbol symbol="WHALE" />
+                  <TokenSymbol symbol="MBIRD" />
                 </CardIcon>
               </Box>
               Current Price
@@ -231,7 +231,7 @@ const Home = () => {
               <h2>MSHARE</h2>
               <Button
                 onClick={() => {
-                  tombFinance.watchAssetInMetamask('OCEAN');
+                  tombFinance.watchAssetInMetamask('MSHARE');
                 }}
                 color="primary"
                 variant="outlined"
@@ -242,7 +242,7 @@ const Home = () => {
               </Button>
               <Box mt={2}>
                 <CardIcon>
-                  <TokenSymbol symbol="OCEAN" />
+                  <TokenSymbol symbol="MSHARE" />
                 </CardIcon>
               </Box>
               Current Price
@@ -265,10 +265,10 @@ const Home = () => {
         <Grid item xs={12} sm={4}>
           <Card>
             <CardContent align="center" style={{ position: 'relative' }}>
-              <h2>MBOND</h2>
+              <h2>MOON</h2>
               <Button
                 onClick={() => {
-                  tombFinance.watchAssetInMetamask('ANCHOR');
+                  tombFinance.watchAssetInMetamask('MOON');
                 }}
                 color="primary"
                 variant="outlined"
@@ -279,7 +279,7 @@ const Home = () => {
               </Button>
               <Box mt={2}>
                 <CardIcon>
-                  <TokenSymbol symbol="OCEAN" />
+                  <TokenSymbol symbol="MSHARE" />
                 </CardIcon>
               </Box>
               Current Price
@@ -303,7 +303,7 @@ const Home = () => {
               <h2>MBIRD-POS Spooky LP</h2>
               <Box mt={2}>
                 <CardIcon>
-                  <TokenSymbol symbol="WHALE-POS-LP" />
+                  <TokenSymbol symbol="MBIRD-POS-LP" />
                 </CardIcon>
               </Box>
               <Box mt={2}>
@@ -313,7 +313,7 @@ const Home = () => {
               </Box>
               <Box mt={2}>
                 <span style={{ fontSize: '26px' }}>
-                  {tombLPStats?.tokenAmount ? tombLPStats?.tokenAmount : '-.--'} WHALE /{' '}
+                  {tombLPStats?.tokenAmount ? tombLPStats?.tokenAmount : '-.--'} MBIRD /{' '}
                   {tombLPStats?.ftmAmount ? tombLPStats?.ftmAmount : '-.--'} POS
                 </span>
               </Box>
@@ -331,7 +331,7 @@ const Home = () => {
               <h2>MSHARE-POS Spooky LP</h2>
               <Box mt={2}>
                 <CardIcon>
-                  <TokenSymbol symbol="OCEAN-POS-LP" />
+                  <TokenSymbol symbol="MSHARE-POS-LP" />
                 </CardIcon>
               </Box>
               <Box mt={2}>
@@ -345,7 +345,7 @@ const Home = () => {
               </Box>
               <Box mt={2}>
                 <span style={{ fontSize: '26px' }}>
-                  {tshareLPStats?.tokenAmount ? tshareLPStats?.tokenAmount : '-.--'} OCEAN /{' '}
+                  {tshareLPStats?.tokenAmount ? tshareLPStats?.tokenAmount : '-.--'} MSHARE /{' '}
                   {tshareLPStats?.ftmAmount ? tshareLPStats?.ftmAmount : '-.--'} POS
                 </span>
               </Box>

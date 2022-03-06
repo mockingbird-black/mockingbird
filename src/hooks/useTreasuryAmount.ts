@@ -9,7 +9,7 @@ const useTreasuryAmount = () => {
   useEffect(() => {
     if (tombFinance) {
       const { Treasury } = tombFinance.contracts;
-      tombFinance.WHALE.balanceOf(Treasury.address).then(setAmount);
+      tombFinance.MBIRD.balanceOf(Treasury.address).then(setAmount);
     }
   }, [tombFinance]);
   return amount;

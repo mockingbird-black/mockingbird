@@ -2996,7 +2996,7 @@
             "type": "uint256"
           }
         ],
-        "name": "MasonryFunded",
+        "name": "NestFunded",
         "type": "event"
       },
       {
@@ -3201,7 +3201,7 @@
       },
       {
         "inputs": [],
-        "name": "masonry",
+        "name": "nest",
         "outputs": [
           {
             "internalType": "address",
@@ -3638,7 +3638,7 @@
           },
           {
             "internalType": "address",
-            "name": "_masonry",
+            "name": "_nest",
             "type": "address"
           },
           {
@@ -3669,11 +3669,11 @@
         "inputs": [
           {
             "internalType": "address",
-            "name": "_masonry",
+            "name": "_nest",
             "type": "address"
           }
         ],
-        "name": "setMasonry",
+        "name": "setNest",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -3954,7 +3954,7 @@
             "type": "address"
           }
         ],
-        "name": "masonrySetOperator",
+        "name": "nestSetOperator",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -3972,7 +3972,7 @@
             "type": "uint256"
           }
         ],
-        "name": "masonrySetLockUp",
+        "name": "nestSetLockUp",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -3985,7 +3985,7 @@
             "type": "uint256"
           }
         ],
-        "name": "masonryAllocateSeigniorage",
+        "name": "nestAllocateSeigniorage",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -4008,14 +4008,14 @@
             "type": "address"
           }
         ],
-        "name": "masonryGovernanceRecoverUnsupported",
+        "name": "nestGovernanceRecoverUnsupported",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
       }
     ]
   },
-  "Masonry": {
+  "Nest": {
     "address": "0xA44d9B09e80Ef5786E4466845b94f943991467E5",
     "abi": [
       {
@@ -4153,7 +4153,7 @@
             "type": "uint256"
           }
         ],
-        "name": "masonryHistory",
+        "name": "nestHistory",
         "outputs": [
           {
             "internalType": "uint256",

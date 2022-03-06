@@ -44,7 +44,7 @@ const Footer = () => {
             <Typography variant="body2" color="textSecondary" align="left">
               {'Copyright © '}
               <Link color="inherit" href="/">
-                Poseidon Black
+                Mocking Bird
               </Link>{' '}
               {new Date().getFullYear()}
             </Typography>

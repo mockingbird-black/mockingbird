@@ -97,21 +97,21 @@ const Nav = () => {
             <Typography variant="h6" color="inherit" noWrap className={classes.toolbarTitle}>
               {/* <a className={ classes.brandLink } href="/">Tomb Finance</a> */}
               <Link to="/" color="inherit" className={classes.brandLink}>
-                Mockingbird
+                Mocking Bird
               </Link>
             </Typography>
             <Box mr={5}>
               <Link color="textPrimary" to="/" className={classes.link}>
                 Home
               </Link>
-              <Link color="textPrimary" to="/cemetery" className={classes.link}>
-                Cemetery
+              <Link color="textPrimary" to="/sky" className={classes.link}>
+                Sky
               </Link>
-              <Link color="textPrimary" to="/masonry" className={classes.link}>
-                Masonry
+              <Link color="textPrimary" to="/nest" className={classes.link}>
+                Nest
               </Link>
-              <Link color="textPrimary" to="/pit" className={classes.link}>
-                Pit
+              <Link color="textPrimary" to="/flight" className={classes.link}>
+                Flight
               </Link>
               {/* <Link color="textPrimary" to="/regulations" className={classes.link}>
                 Regulations
@@ -156,9 +156,9 @@ const Nav = () => {
               <Divider />
               <List>
                 <ListItemLink primary="Home" to="/" />
-                <ListItemLink primary="Cemetery" to="/cemetery" />
-                <ListItemLink primary="Masonry" to="/masonry" />
-                <ListItemLink primary="Pit" to="/pit" />
+                <ListItemLink primary="Sky" to="/sky" />
+                <ListItemLink primary="Nest" to="/nest" />
+                <ListItemLink primary="Flight" to="/flight" />
                 {/* <ListItemLink primary="Regulations" to="/regulations" /> */}
                 <ListItem button component="a" href="https://docs.tomb.finance">
                   <ListItemText>Docs</ListItemText>
